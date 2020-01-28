@@ -9,12 +9,12 @@ class HCEService : HostApduService() {
     companion object {
         const val TAG = "Host Card Emulator"
         const val STATUS_SUCCESS = "9000"
-        const val STATUS_FAILED = "6F00"
+        const val STATUS_FAILED = "6A82"
         const val CLA_NOT_SUPPORTED = "6E00"
         const val INS_NOT_SUPPORTED = "6D00"
     }
 
-    // 1 YCT, 2 BJ TU, 3 Suzhou, 4 Shenzhen
+    // 1 YCT, 2 BJ TU, 3 Suzhou, 4 Shenzhen, 5 BJ OLD
     private var cardType = 0
 
     override fun onDeactivated(reason: Int) {
@@ -49,6 +49,9 @@ class HCEService : HostApduService() {
                     tran.txResult = "6F0A84085041592E415050599000"
                     cardType = 1
                 }
+                /*"00A40000023F00" -> {
+                    tran.txResult = "6F15840E315041592E5359532E4444463031A5038801019000"
+                }*/
                 "00A404000B535558494E2E4444463031" -> {
                     tran.txResult =
                         "6F30840B535558494E2E4444463031A5219F0C1E21500909283991510202860000215000283991512019010120501231FFFF9000"
@@ -63,6 +66,10 @@ class HCEService : HostApduService() {
                     tran.txResult = "6F0A84085041592E4D4631586A81"
                 "00A40400085041592E4D463158" ->
                     tran.txResult = "6F0A84085041592E4D4631586A81"
+            }
+            "0020" -> {
+                // suzhou
+                tran.txResult = "9000"
             }
             "00B0" -> {
                 // switch by P1, P2 is offset (because bit 8 of P1 is 1)
@@ -81,6 +88,12 @@ class HCEService : HostApduService() {
                     // 0x16
                     "96" ->
                         "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+                    // 0x04 beijing old
+                    "84" ->
+                        "1000751136141285060200300000000000000000000000002018030920240309000000000000009156000014FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
+                    // 0x05 beijing old
+                    "85" ->
+                        "000000001400000000302001141204000100FFFFFFFFFFFFFFFFFFFFFFFFFFFF"
                     else -> ""
                 }
                 if (commandApdu.count() == 5) {
@@ -150,9 +163,10 @@ class HCEService : HostApduService() {
                     4 -> ""
                     else -> "000000640007A1200000000000000000"
                 }
-                "0002" -> result = when (cardType) {
+                "0001", "0002" -> result = when (cardType) {
                     1 -> "00000064"
                     2 -> "00000B22"
+                    3 -> "00000064"
                     4 -> "80000064"
                     else -> "00000064"
                 }
