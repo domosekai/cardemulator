@@ -14,7 +14,6 @@ class HCEService : HostApduService() {
         const val INS_NOT_SUPPORTED = "6D00"
     }
 
-    // 1 YCT, 2 BJ TU, 3 Suzhou, 4 Shenzhen, 5 BJ OLD
     private var cardType = 0
 
     override fun onDeactivated(reason: Int) {
@@ -32,15 +31,16 @@ class HCEService : HostApduService() {
         tran.txQuery = hexCommandApdu
         var result = ""
         when (hexCommandApdu.substring(0, 4)) {
+            // 1 YCT, 2 BJ TU, 3 Suzhou, 4 Shenzhen, 5 BJ OLD
             "00A4" -> when (hexCommandApdu) {
-                "00A4040008A000000632010105" -> {
+                "00A4040008A000000632010105", "00A4040008A00000063201010500" -> {
                     tran.txResult =
                         "6F318408A000000632010105A5259F0801029F0C1E01011000FFFFFFFF020103105170010170907984201908062040123100009000"
                     cardType = 2
                 }
-                "00A404001091560000144D4F542E424D4143303031" ->
+                "00A404001091560000144D4F542E424D4143303031", "00A404001091560000144D4F542E424D414330303100" ->
                     tran.txResult = "6F12841091560000144D4F542E424D41433030319000"
-                "00A40000021001", "00A40400075041592E535A54" -> {
+                "00A40000021001", "00A40400075041592E535A54", "00A40400075041592E535A5400" -> {
                     tran.txResult =
                         "6F3284075041592E535A54A5279F0801029F0C200000000000000000FD44000051800000E63C1D292017120120271201101000009000"
                     cardType = 4
@@ -52,13 +52,11 @@ class HCEService : HostApduService() {
                 /*"00A40000023F00" -> {
                     tran.txResult = "6F15840E315041592E5359532E4444463031A5038801019000"
                 }*/
-                "00A404000B535558494E2E4444463031" -> {
+                "00A404000B535558494E2E4444463031", "00A404000B535558494E2E444446303100" -> {
                     tran.txResult =
                         "6F30840B535558494E2E4444463031A5219F0C1E21500909283991510202860000215000283991512019010120501231FFFF9000"
                     cardType = 3
                 }
-                "00A404000B535558494E2E4444463032" ->
-                    tran.txResult = "6F0D840B535558494E2E44444630329000"
                 "00A40400085041592E5449434C", "00A40400085041592E5449434C36" ->
                     tran.txResult =
                         "6F3484085041592E5449434CA5289F0801029F0C21FFFFFFFFFFFFFFFF000000000000000000000000000000002019120700000186A09000"
