@@ -31,7 +31,7 @@ class HCEService : HostApduService() {
         tran.txQuery = hexCommandApdu
         var result = ""
         when (hexCommandApdu.substring(0, 4)) {
-            // 1 YCT, 2 BJ TU, 3 Suzhou, 4 Shenzhen, 5 BJ OLD
+            // 1 YCT, 2 BJ TU, 3 Suzhou, 4 Shenzhen, 5 BJ OLD, 6 CU Fake
             "00A4" -> when (hexCommandApdu) {
                 "00A4040008A000000632010105", "00A4040008A00000063201010500" -> {
                     tran.txResult =
@@ -40,7 +40,7 @@ class HCEService : HostApduService() {
                 }
                 "00A404001091560000144D4F542E424D4143303031", "00A404001091560000144D4F542E424D414330303100" ->
                     tran.txResult = "6F12841091560000144D4F542E424D41433030319000"
-                "00A40000021001", "00A40400075041592E535A54", "00A40400075041592E535A5400" -> {
+                /*"00A40000021001", "00A40400075041592E535A54", "00A40400075041592E535A5400" -> {
                     tran.txResult =
                         "6F3284075041592E535A54A5279F0801029F0C200000000000000000FD44000051800000E63C1D292017120120271201101000009000"
                     cardType = 4
@@ -63,7 +63,11 @@ class HCEService : HostApduService() {
                 "00A4000002ADF1" ->
                     tran.txResult = "6F0A84085041592E4D4631586A81"
                 "00A40400085041592E4D463158" ->
-                    tran.txResult = "6F0A84085041592E4D4631586A81"
+                    tran.txResult = "6F0A84085041592E4D4631586A81"*/
+                "00A4040009A00000000386980701", "00A4040009A0000000038698070100" -> {
+                    tran.txResult = "9000"
+                    cardType = 6
+                }
             }
             "0020" -> {
                 // suzhou
@@ -78,6 +82,7 @@ class HCEService : HostApduService() {
                         2 -> "01011000FFFFFFFF02010310517001017090798420190806204012310000"
                         3 -> "21500909283991510202860000215000283991512019010120501231FFFF"
                         4 -> "0000000000000000FD44000051800000D63C1D29201712012027120110100000"
+                        6 -> "869821400001FFFF02002140889844B34EEB9DEC20191107203011075000"
                         else -> ""
                     }
                     // 0x11
@@ -166,6 +171,7 @@ class HCEService : HostApduService() {
                     2 -> "00000B22"
                     3 -> "00000064"
                     4 -> "80000064"
+                    //6 -> "00000064"
                     else -> "00000064"
                 }
             }
