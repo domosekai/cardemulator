@@ -11,5 +11,6 @@
         <aid-filter android:name="A000000632010105" />
         <aid-filter android:name="535558494E2E4444463031" />
         <aid-filter android:name="D156000015B9ABB9B2D3A6D3C3" />
+        <aid-filter android:name="535A504B5F5A5959" />
     </aid-group>
 </host-apdu-service>
