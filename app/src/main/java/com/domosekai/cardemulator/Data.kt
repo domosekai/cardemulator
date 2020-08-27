@@ -1,13 +1,51 @@
 package com.domosekai.cardemulator
 
 data class Transaction(
-    var txQuery: String = "",
-    var txResult: String? = null
+    var query: String = "",
+    var command: String = "",
+    var p1: Int = 0,
+    var p2: Int = 0,
+    var lc: Int = 0,
+    var data: String = "",
+    var le: Int = 0,
+    var result: String = ""
 )
 
+const val TYPE_YCT = 1
+const val TYPE_BJ = 2
+const val TYPE_SUZ = 3
+const val TYPE_SUZ_CIKA = 4
+const val TYPE_SZT = 5
+const val TYPE_TFT = 6
+const val TYPE_SPTC = 7
+const val TYPE_ZHENJIANG = 8
+const val TYPE_CU = 99
+
+const val TU_BJ = 1
+const val TU_NANTONG = 2
+const val TU_GEN = 99
+
 lateinit var prefix: String
-var cardType1 = 0
-var cardType2 = 0
+var cardType = 0
+var tuType = 0
+var cuIssuer = ""
+var tuIssuer = ""
+var app = 0
+
+fun parseAPDU(apdu: ByteArray): Transaction {
+    val tran = Transaction()
+    tran.query = byteArrayToHexString(apdu)
+    if (apdu.size < 5) return tran
+    tran.command = byteArrayToHexString(apdu.sliceArray(0..1))
+    tran.p1 = apdu[2].toInt() and 0xFF
+    tran.p2 = apdu[3].toInt() and 0xFF
+    tran.lc = apdu[4].toInt() and 0xFF
+    if (tran.lc > 0 && apdu.size >= tran.lc + 5)
+        tran.data = byteArrayToHexString(apdu.sliceArray(5..tran.lc + 4))
+    if (apdu.size > tran.lc + 5)
+        tran.le = apdu[tran.lc + 5].toInt() and 0xFF
+    return tran
+}
 
 fun byteArrayToHexString(bytes: ByteArray): String {
     val hexArray = charArrayOf(
