@@ -6,6 +6,8 @@ data class Transaction(
 )
 
 lateinit var prefix: String
+var cardType1 = 0
+var cardType2 = 0
 
 fun byteArrayToHexString(bytes: ByteArray): String {
     val hexArray = charArrayOf(
