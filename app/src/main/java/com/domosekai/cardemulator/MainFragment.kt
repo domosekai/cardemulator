@@ -10,7 +10,6 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 
-
 class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var spinner1: Spinner

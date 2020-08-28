@@ -4,9 +4,9 @@ import android.media.RingtoneManager
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
+import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.concurrent.schedule
-
 
 class HCEService : HostApduService() {
 
@@ -27,27 +27,40 @@ class HCEService : HostApduService() {
         var metroStation = ""
         var metroRemark = ""
         var prefix = ""
-        var busy = false
+        var wait = false
         val rawMessage = MutableLiveData("")
         var commands = ""
         var terminals = MutableLiveData("")
         var cuCustom = emptyMap<String, String>()
         var tuCustom = emptyMap<String, String>()
+        val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
     }
 
     override fun onDeactivated(reason: Int) {
-        busy = true
         rawMessage.value += "Deactivated: $reason\n\n"
-        Timer().schedule(1000) { busy = false }
+        if (wait) {
+            Timer().schedule(1000) { wait = false }
+        }
     }
 
     override fun processCommandApdu(commandApdu: ByteArray?, extras: Bundle?): ByteArray {
-        if (busy || commandApdu == null) {
+        if (wait || commandApdu == null) {
             return hexStringToByteArray(STATUS_FAILED)
         }
         val tran = parseAPDU(commandApdu)
+        rawMessage.value += df.format(Date()) + "\n"
+        when (tran.command) {
+            "00B0" -> {
+                rawMessage.value += "Read Info ${"%02X".format(tran.p1 and 0x1F)}\n"
+            }
+            "00B2" -> {
+                rawMessage.value += "Read Record ${"%02X".format(tran.p2 shr 3)} #${tran.p1}\n"
+            }
+        }
         rawMessage.value += "Command: ${tran.query}\n"
         commands += tran.query + "\n"
+
+        // Get custom response
         var result = if (inTU) {
             tuCustom[tran.query]
         } else {
@@ -58,6 +71,7 @@ class HCEService : HostApduService() {
             return hexStringToByteArray(result)
         }
 
+        // Get predefined response
         when (tran.command) {
             // SELECT
             "00A4" -> {
@@ -368,6 +382,7 @@ class HCEService : HostApduService() {
                             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
                         val r = RingtoneManager.getRingtone(applicationContext, notification)
                         r.play()
+                        wait = true
                     }
                 } else {
                     result = "00000B2200020000000100" + "E9F0DEEA"
@@ -378,6 +393,7 @@ class HCEService : HostApduService() {
                             RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
                         val r = RingtoneManager.getRingtone(applicationContext, notification)
                         r.play()
+                        wait = true
                     }
                 }
             // Update record
