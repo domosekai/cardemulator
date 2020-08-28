@@ -1,10 +1,12 @@
 package com.domosekai.cardemulator
 
+import android.media.RingtoneManager
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
 import androidx.lifecycle.MutableLiveData
 import java.util.*
 import kotlin.concurrent.schedule
+
 
 class HCEService : HostApduService() {
 
@@ -28,6 +30,7 @@ class HCEService : HostApduService() {
         var busy = false
         val rawMessage = MutableLiveData("")
         var commands = ""
+        var terminals = MutableLiveData("")
         var cuCustom = emptyMap<String, String>()
         var tuCustom = emptyMap<String, String>()
     }
@@ -352,12 +355,31 @@ class HCEService : HostApduService() {
                 // 01 02 03
                 else -> "00000B22"
             }
+            // Get challenge
+            "0084" -> result = "C620857FF5D967C2"
             // Init for load
             "8050" ->
-                result =
-                    if (tuType > 0 && app == 2) "00000B2200020000000100" + "E9F0DEEA"
-                    // other than TU
-                    else "00000B2200020000000100" + "E9F0DEEA"
+                if (tuType > 0 && app == 2) {
+                    result = "00000B2200020000000100" + "E9F0DEEA"
+                    if (tran.lc == 11 && metro) {
+                        terminals.value += "$metroLine,$metroStation,$metroRemark,$inGate," +
+                                tran.data.takeLast(12) + "\n"
+                        val notification =
+                            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                        val r = RingtoneManager.getRingtone(applicationContext, notification)
+                        r.play()
+                    }
+                } else {
+                    result = "00000B2200020000000100" + "E9F0DEEA"
+                    if (tran.lc == 11 && metro) {
+                        terminals.value += "$metroLine,$metroStation,$metroRemark,$inGate," +
+                                tran.data.takeLast(12) + "\n"
+                        val notification =
+                            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                        val r = RingtoneManager.getRingtone(applicationContext, notification)
+                        r.play()
+                    }
+                }
             // Update record
             "80DC" -> result = ""
         }

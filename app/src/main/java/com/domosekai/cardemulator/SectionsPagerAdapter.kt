@@ -9,12 +9,14 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
 
     private val TAB_TITLES = arrayOf(
         R.string.tab_text_1,
-        R.string.tab_text_2
+        R.string.tab_text_2,
+        R.string.tab_text_3
     )
 
     override fun getItem(position: Int) = when (position) {
         0 -> MainFragment()
-        else -> RawFragment()
+        1 -> RawFragment()
+        else -> TermsFragment()
     }
 
     override fun getPageTitle(position: Int): CharSequence? {
@@ -22,7 +24,6 @@ class SectionsPagerAdapter(private val context: Context, fm: FragmentManager) :
     }
 
     override fun getCount(): Int {
-        // Show 2 total pages.
-        return 2
+        return 3
     }
 }
