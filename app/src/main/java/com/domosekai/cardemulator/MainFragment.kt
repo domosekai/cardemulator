@@ -107,6 +107,7 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
         val cuApplyButton = root.findViewById<Button>(R.id.cu_apply)
         cuApplyButton.setOnClickListener {
+            HCEService.cuIssuer = cuIssuer.text.toString()
             val map = mutableMapOf<String, String>()
             var i = 1
             while (i < cu_more.childCount - 1) {
@@ -135,6 +136,7 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
         val tuApplyButton = root.findViewById<Button>(R.id.tu_apply)
         tuApplyButton.setOnClickListener {
+            HCEService.tuIssuer = tuIssuer.text.toString()
             val map = mutableMapOf<String, String>()
             var i = 1
             while (i < tu_more.childCount - 1) {

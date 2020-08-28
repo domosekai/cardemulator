@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.ScrollView
 import android.widget.TextView
 import androidx.fragment.app.Fragment
 import androidx.lifecycle.Observer
@@ -41,6 +42,12 @@ class RawFragment : Fragment() {
                 requireActivity().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val clip: ClipData = ClipData.newPlainText("simple text", HCEService.rawMessage.value)
             clipboard.setPrimaryClip(clip)
+        }
+
+        val scrollView = root.findViewById<ScrollView>(R.id.raw_scroll)
+        val bottomButton = root.findViewById<Button>(R.id.bottom_message)
+        bottomButton.setOnClickListener {
+            scrollView.fullScroll(View.FOCUS_DOWN)
         }
 
         val rawTextView = root.findViewById<TextView>(R.id.raw_message)

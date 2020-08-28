@@ -26,7 +26,7 @@ class HCEService : HostApduService() {
         var metroRemark = ""
         var prefix = ""
         var busy = false
-        val rawMessage = MutableLiveData<String>()
+        val rawMessage = MutableLiveData("")
         var commands = ""
         var cuCustom = emptyMap<String, String>()
         var tuCustom = emptyMap<String, String>()
@@ -43,15 +43,15 @@ class HCEService : HostApduService() {
             return hexStringToByteArray(STATUS_FAILED)
         }
         val tran = parseAPDU(commandApdu)
-        rawMessage.value += "Query: ${tran.query}\n"
-        commands += tran.query
+        rawMessage.value += "Command: ${tran.query}\n"
+        commands += tran.query + "\n"
         var result = if (inTU) {
             tuCustom[tran.query]
         } else {
             cuCustom[tran.query]
         }
         if (result != null) {
-            rawMessage.value += "Result: ${result}\n\n"
+            rawMessage.value += "Response: ${result}\n\n"
             return hexStringToByteArray(result)
         }
 
@@ -371,7 +371,7 @@ class HCEService : HostApduService() {
             tran.result = STATUS_FAILED
         }
 
-        rawMessage.value += "Result: ${tran.result}\n\n"
+        rawMessage.value += "Response: ${tran.result}\n\n"
         return hexStringToByteArray(tran.result)
 
     }
