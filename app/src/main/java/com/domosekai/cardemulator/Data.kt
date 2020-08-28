@@ -25,13 +25,6 @@ const val TU_BJ = 1
 const val TU_NANTONG = 2
 const val TU_GEN = 99
 
-lateinit var prefix: String
-var cardType = 0
-var tuType = 0
-var cuIssuer = ""
-var tuIssuer = ""
-var app = 0
-
 fun parseAPDU(apdu: ByteArray): Transaction {
     val tran = Transaction()
     tran.query = byteArrayToHexString(apdu)
@@ -40,10 +33,14 @@ fun parseAPDU(apdu: ByteArray): Transaction {
     tran.p1 = apdu[2].toInt() and 0xFF
     tran.p2 = apdu[3].toInt() and 0xFF
     tran.lc = apdu[4].toInt() and 0xFF
-    if (tran.lc > 0 && apdu.size >= tran.lc + 5)
+    if (tran.lc > 0 && apdu.size >= tran.lc + 5) {
         tran.data = byteArrayToHexString(apdu.sliceArray(5..tran.lc + 4))
-    if (apdu.size > tran.lc + 5)
-        tran.le = apdu[tran.lc + 5].toInt() and 0xFF
+        if (apdu.size > tran.lc + 5)
+            tran.le = apdu[tran.lc + 5].toInt() and 0xFF
+    } else if (tran.lc > 0) {
+        tran.le = tran.lc
+        tran.lc = 0
+    }
     return tran
 }
 
