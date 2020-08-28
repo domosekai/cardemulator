@@ -1,5 +1,6 @@
 package com.domosekai.cardemulator
 
+import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
@@ -9,6 +10,8 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
+import java.text.SimpleDateFormat
+import java.util.*
 
 class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
@@ -151,40 +154,49 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         // Metro stations
         val metroLine = root.findViewById<EditText>(R.id.metro_line)
-        val lineWatcher = object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                HCEService.metroLine = p0.toString()
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        }
-        metroLine.addTextChangedListener(lineWatcher)
         val metroStation = root.findViewById<EditText>(R.id.metro_station)
-        val stationWatcher = object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                HCEService.metroStation = p0.toString()
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        }
-        metroStation.addTextChangedListener(stationWatcher)
         val metroRemark = root.findViewById<EditText>(R.id.metro_remark)
-        val remarkWatcher = object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                HCEService.metroRemark = p0.toString()
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-        }
-        metroRemark.addTextChangedListener(remarkWatcher)
+        val metroCity = root.findViewById<EditText>(R.id.metro_city)
+        val metroStationIn = root.findViewById<EditText>(R.id.metro_station_in)
+        val metroTimeIn = root.findViewById<EditText>(R.id.metro_time_in)
         val rg = root.findViewById<RadioGroup>(R.id.radio_gate)
         rg.setOnCheckedChangeListener { radioGroup, i ->
             HCEService.inGate = i == R.id.radio_exit
         }
-
+        val df = SimpleDateFormat("yyyyMMddHHmmss")
+        val metroApplyButton = root.findViewById<Button>(R.id.metro_apply)
+        metroApplyButton.setOnClickListener {
+            HCEService.metroLine = metroLine.text.toString()
+            HCEService.metroStation = metroStation.text.toString()
+            HCEService.metroRemark = metroRemark.text.toString()
+            if (metroCity.text.length == 8) {
+                HCEService.metroCity = metroCity.text.toString()
+                metroCity.setTextColor(pos.textColors)
+            } else {
+                metroCity.setTextColor(Color.RED)
+            }
+            if (metroStationIn.text.length == 16) {
+                HCEService.metroStationIn = metroStationIn.text.toString()
+                metroStationIn.setTextColor(pos.textColors)
+            } else {
+                metroStationIn.setTextColor(Color.RED)
+            }
+            if (metroTimeIn.text.length == 14) {
+                HCEService.metroTimeIn = metroTimeIn.text.toString()
+                metroStationIn.setTextColor(pos.textColors)
+            } else {
+                metroStationIn.setTextColor(Color.RED)
+            }
+        }
+        val metroDefaultButton = root.findViewById<Button>(R.id.metro_default)
+        metroDefaultButton.setOnClickListener {
+            metroCity.setText(metroCity.hint)
+            metroCity.setTextColor(pos.textColors)
+            metroStationIn.setText(metroStationIn.hint)
+            metroStationIn.setTextColor(pos.textColors)
+            metroTimeIn.setText(df.format(Date(Date().time - 30 * 60 * 1000)))
+            metroTimeIn.setTextColor(pos.textColors)
+        }
         return root
     }
 
