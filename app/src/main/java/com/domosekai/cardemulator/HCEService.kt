@@ -2,14 +2,13 @@ package com.domosekai.cardemulator
 
 import android.nfc.cardemulation.HostApduService
 import android.os.Bundle
-import android.util.Log
+import androidx.lifecycle.MutableLiveData
 import java.util.*
 import kotlin.concurrent.schedule
 
 class HCEService : HostApduService() {
 
     companion object {
-        const val TAG = "Host Card Emulator"
         const val STATUS_SUCCESS = "9000"
         const val STATUS_FAILED = "6A82"
         const val CLA_NOT_SUPPORTED = "6E00"
@@ -19,13 +18,23 @@ class HCEService : HostApduService() {
         var cuIssuer = ""
         var tuIssuer = ""
         var app = 0
+        var inTU = false
+        var metro = false
+        var inGate = false
+        var metroLine = ""
+        var metroStation = ""
+        var metroRemark = ""
         var prefix = ""
         var busy = false
+        val rawMessage = MutableLiveData<String>()
+        var commands = ""
+        var cuCustom = emptyMap<String, String>()
+        var tuCustom = emptyMap<String, String>()
     }
 
     override fun onDeactivated(reason: Int) {
         busy = true
-        Log.i(TAG, "Deactivated: $reason")
+        rawMessage.value += "Deactivated: $reason\n\n"
         Timer().schedule(1000) { busy = false }
     }
 
@@ -34,8 +43,18 @@ class HCEService : HostApduService() {
             return hexStringToByteArray(STATUS_FAILED)
         }
         val tran = parseAPDU(commandApdu)
-        Log.i(TAG, "Query: ${tran.query}")
-        var result: String? = null
+        rawMessage.value += "Query: ${tran.query}\n"
+        commands += tran.query
+        var result = if (inTU) {
+            tuCustom[tran.query]
+        } else {
+            cuCustom[tran.query]
+        }
+        if (result != null) {
+            rawMessage.value += "Result: ${result}\n\n"
+            return hexStringToByteArray(result)
+        }
+
         when (tran.command) {
             // SELECT
             "00A4" -> {
@@ -47,6 +66,7 @@ class HCEService : HostApduService() {
                             result =
                                 "6F318408A000000632010105A5259F0801029F0C1E01011000FFFFFFFF02010310517001017090798420190806204012310000"
                             app = 2
+                            inTU = true
                         }
                     "91560000144D4F542E424D4143303031" ->
                         if (tuType == TU_BJ) {
@@ -54,36 +74,50 @@ class HCEService : HostApduService() {
                             app = 3
                         }
                     "5041592E535A54" ->
-                        if (cardType == TYPE_SZT)
+                        if (cardType == TYPE_SZT) {
                             result =
                                 "6F3284075041592E535A54A5279F0801029F0C200000000000000000FD44000051800000E63C1D29201712012027120110100000"
+                            inTU = false
+                        }
                     "5041592E41505059" ->
-                        if (cardType == TYPE_YCT)
+                        if (cardType == TYPE_YCT) {
                             result = "6F0A84085041592E41505059"
+                            inTU = false
+                        }
                     "5041592E5449434C" ->
                         if (cardType == TYPE_YCT) {
                             result =
                                 "6F3484085041592E5449434CA5289F0801029F0C21FFFFFFFFFFFFFFFF000000000000000000000000000000002019120700000186A0"
                             app = 1
+                            inTU = false
                         }
                     "535558494E2E4444463031", "DF01" ->
-                        if (cardType == TYPE_SUZ)
+                        if (cardType == TYPE_SUZ) {
                             result =
                                 "6F30840B535558494E2E4444463031A5219F0C1E21500909283991510202860000215000283991512019010120501231FFFF"
+                            inTU = false
+                        }
                     "0006", "535A504B5F5A5959" ->
-                        if (cardType == TYPE_SUZ_CIKA)
+                        if (cardType == TYPE_SUZ_CIKA) {
                             result = ""
+                            inTU = false
+                        }
                     "A00000000386980701" ->
-                        if (cardType in setOf(TYPE_CU, TYPE_SPTC, TYPE_ZHENJIANG))
+                        if (cardType in setOf(TYPE_CU, TYPE_SPTC, TYPE_ZHENJIANG)) {
                             result =
                                 "6F328409A00000000386980701A5259F0801029F0C1E869820007590FFFF820520007D93847E0526E0B820180724202410160214"
+                            inTU = false
+                        }
                     "D156000015B9ABB9B2D3A6D3C3" ->
-                        if (cardType == TYPE_TFT)
+                        if (cardType == TYPE_TFT) {
                             result = ""
+                            inTU = false
+                        }
                     "1002" ->
                         if (cardType == TYPE_TFT) {
                             result = ""
                             app = 1
+                            inTU = false
                         }
                 }
             }
@@ -337,7 +371,7 @@ class HCEService : HostApduService() {
             tran.result = STATUS_FAILED
         }
 
-        Log.i(TAG, "Result: " + tran.result)
+        rawMessage.value += "Result: ${tran.result}\n\n"
         return hexStringToByteArray(tran.result)
 
     }

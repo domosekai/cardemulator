@@ -10,14 +10,18 @@ import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
 
+
 class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
     private lateinit var spinner1: Spinner
     private lateinit var spinner2: Spinner
     private lateinit var spinner3: Spinner
     private lateinit var psm: ConstraintLayout
+    private lateinit var cu_more: LinearLayout
+    private lateinit var tu_more: LinearLayout
     private lateinit var cu_generic: LinearLayout
     private lateinit var tu_generic: LinearLayout
+    private lateinit var metro: LinearLayout
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -53,8 +57,11 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
             spinner3.onItemSelectedListener = this
         }
         psm = root.findViewById(R.id.psm_scan)
+        cu_more = root.findViewById(R.id.cu_more)
+        tu_more = root.findViewById(R.id.tu_more)
         cu_generic = root.findViewById(R.id.cu_generic)
         tu_generic = root.findViewById(R.id.tu_generic)
+        metro = root.findViewById(R.id.metro)
 
         // PSM Scan
         val pos = root.findViewById<EditText>(R.id.pos)
@@ -85,31 +92,97 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
         pos.addTextChangedListener(posWatcher)
 
-        // CU generic card
+        // CU more
         val cuIssuer = root.findViewById<EditText>(R.id.cu_issuer)
         HCEService.cuIssuer = cuIssuer.text.toString()
-        val cuWatcher = object : TextWatcher {
-            override fun afterTextChanged(p0: Editable?) {
-                HCEService.cuIssuer = p0.toString()
-            }
-
-            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
-            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        val cuAddButton = root.findViewById<Button>(R.id.cu_add)
+        cuAddButton.setOnClickListener {
+            val line = inflater.inflate(R.layout.custom_data, container, false)
+            cu_more.addView(line, cu_more.childCount - 1)
         }
-        cuIssuer.addTextChangedListener(cuWatcher)
+        val cuClearButton = root.findViewById<Button>(R.id.cu_clear)
+        cuClearButton.setOnClickListener {
+            cu_more.removeViews(1, cu_more.childCount - 2)
+            HCEService.cuCustom = emptyMap()
+        }
+        val cuApplyButton = root.findViewById<Button>(R.id.cu_apply)
+        cuApplyButton.setOnClickListener {
+            val map = mutableMapOf<String, String>()
+            var i = 1
+            while (i < cu_more.childCount - 1) {
+                val q = cu_more.getChildAt(i).findViewById<EditText>(R.id.custom_query)
+                val r = cu_more.getChildAt(i).findViewById<EditText>(R.id.custom_result)
+                if (q.text.toString() != "" && r.text.toString() != "") {
+                    map[q.text.toString().toUpperCase()] = r.text.toString().toUpperCase()
+                }
+                i++
+            }
+            HCEService.cuCustom = map
+        }
 
-        // TU generic card
+        // TU more
         val tuIssuer = root.findViewById<EditText>(R.id.tu_issuer)
         HCEService.tuIssuer = tuIssuer.text.toString()
-        val tuWatcher = object : TextWatcher {
+        val tuAddButton = root.findViewById<Button>(R.id.tu_add)
+        tuAddButton.setOnClickListener {
+            val line = inflater.inflate(R.layout.custom_data, container, false)
+            tu_more.addView(line, tu_more.childCount - 1)
+        }
+        val tuClearButton = root.findViewById<Button>(R.id.tu_clear)
+        tuClearButton.setOnClickListener {
+            tu_more.removeViews(1, tu_more.childCount - 2)
+            HCEService.tuCustom = emptyMap()
+        }
+        val tuApplyButton = root.findViewById<Button>(R.id.tu_apply)
+        tuApplyButton.setOnClickListener {
+            val map = mutableMapOf<String, String>()
+            var i = 1
+            while (i < tu_more.childCount - 1) {
+                val q = tu_more.getChildAt(i).findViewById<EditText>(R.id.custom_query)
+                val r = tu_more.getChildAt(i).findViewById<EditText>(R.id.custom_result)
+                if (q.text.toString() != "" && r.text.toString() != "") {
+                    map[q.text.toString().toUpperCase()] = r.text.toString().toUpperCase()
+                }
+                i++
+            }
+            HCEService.tuCustom = map
+        }
+
+        // Metro stations
+        val metroLine = root.findViewById<EditText>(R.id.metro_line)
+        val lineWatcher = object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                HCEService.tuIssuer = p0.toString()
+                HCEService.metroLine = p0.toString()
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
             override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
         }
-        tuIssuer.addTextChangedListener(tuWatcher)
+        metroLine.addTextChangedListener(lineWatcher)
+        val metroStation = root.findViewById<EditText>(R.id.metro_station)
+        val stationWatcher = object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                HCEService.metroStation = p0.toString()
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        }
+        metroStation.addTextChangedListener(stationWatcher)
+        val metroRemark = root.findViewById<EditText>(R.id.metro_remark)
+        val remarkWatcher = object : TextWatcher {
+            override fun afterTextChanged(p0: Editable?) {
+                HCEService.metroRemark = p0.toString()
+            }
+
+            override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+            override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
+        }
+        metroRemark.addTextChangedListener(remarkWatcher)
+        val rg = root.findViewById<RadioGroup>(R.id.radio_gate)
+        rg.setOnCheckedChangeListener { radioGroup, i ->
+            HCEService.inGate = i == R.id.radio_exit
+        }
 
         return root
     }
@@ -129,6 +202,8 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     "SPTC" -> HCEService.cardType = TYPE_SPTC
                     "Zhenjiang" -> HCEService.cardType = TYPE_ZHENJIANG
                 }
+                cu_more.visibility =
+                    if (p2 > 0) View.VISIBLE else View.GONE
                 cu_generic.visibility =
                     if (p0.getItemAtPosition(p2) == "CU") View.VISIBLE else View.GONE
             }
@@ -138,12 +213,31 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     "TU BJ" -> HCEService.tuType = TU_BJ
                     "TU" -> HCEService.tuType = TU_GEN
                 }
+                tu_more.visibility =
+                    if (p2 > 0) View.VISIBLE else View.GONE
                 tu_generic.visibility =
                     if (p0.getItemAtPosition(p2) == "TU") View.VISIBLE else View.GONE
             }
             spinner3 -> {
+                when (p0.getItemAtPosition(p2)) {
+                    "SH Metro" -> {
+                        spinner1.setSelection(8, true)
+                        spinner2.setSelection(0, true)
+                    }
+                    "TU Metro" -> {
+                        spinner1.setSelection(0, true)
+                        spinner2.setSelection(2, true)
+                    }
+                }
                 psm.visibility =
                     if (p0.getItemAtPosition(p2) == "PSM Scan") View.VISIBLE else View.GONE
+                if (p0.getItemAtPosition(p2).toString().contains("Metro")) {
+                    metro.visibility = View.VISIBLE
+                    HCEService.metro = true
+                } else {
+                    metro.visibility = View.GONE
+                    HCEService.metro = false
+                }
             }
         }
     }

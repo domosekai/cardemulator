@@ -80,51 +80,222 @@
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/cu_generic"
+            android:id="@+id/cu_more"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/activity_vertical_margin">
 
-            <TextView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/cu_generic"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_weight="0.35"
-                android:gravity="end"
-                android:text="CU Issuer"
-                android:textSize="16sp" />
+                android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/cu_issuer"
-                android:layout_width="0dp"
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="0.35"
+                    android:gravity="end"
+                    android:text="CU Issuer"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/cu_issuer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.65"
+                    android:text="86982000" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.65"
-                android:text="86982000" />
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/cu_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add CU DATA" />
+
+                <Button
+                    android:id="@+id/cu_apply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Apply" />
+
+                <Button
+                    android:id="@+id/cu_clear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Remove All" />
+            </LinearLayout>
         </LinearLayout>
 
         <LinearLayout
-            android:id="@+id/tu_generic"
+            android:id="@+id/tu_more"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="16dp"
-            android:orientation="horizontal">
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/activity_vertical_margin">
 
-            <TextView
-                android:layout_width="0dp"
+            <LinearLayout
+                android:id="@+id/tu_generic"
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginEnd="16dp"
-                android:layout_weight="0.35"
-                android:gravity="end"
-                android:text="TU Issuer"
-                android:textSize="16sp" />
+                android:orientation="horizontal">
 
-            <EditText
-                android:id="@+id/tu_issuer"
-                android:layout_width="0dp"
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="0.35"
+                    android:gravity="end"
+                    android:text="TU Issuer"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/tu_issuer"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.65"
+                    android:text="01011000" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
                 android:layout_height="wrap_content"
-                android:layout_weight="0.65"
-                android:text="01011000" />
+                android:orientation="horizontal">
+
+                <Button
+                    android:id="@+id/tu_add"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Add TU Data" />
+
+                <Button
+                    android:id="@+id/tu_apply"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Apply" />
+
+                <Button
+                    android:id="@+id/tu_clear"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Remove All" />
+            </LinearLayout>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/metro"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingVertical="@dimen/activity_vertical_margin">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="0.35"
+                    android:gravity="end"
+                    android:text="Line"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/metro_line"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.65"
+                    android:hint="3" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="0.35"
+                    android:gravity="end"
+                    android:text="Station"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/metro_station"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.65"
+                    android:hint="中山公园" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="0.35"
+                    android:gravity="end"
+                    android:text="Remark"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/metro_remark"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.65" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginEnd="16dp"
+                    android:layout_weight="0.35"
+                    android:gravity="end"
+                    android:text="Gate type"
+                    android:textSize="16sp" />
+
+                <RadioGroup
+                    android:id="@+id/radio_gate"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.65"
+                    android:checkedButton="@id/radio_entrance"
+                    android:orientation="horizontal">
+
+                    <RadioButton
+                        android:id="@+id/radio_entrance"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Entrance" />
+
+                    <RadioButton
+                        android:id="@+id/radio_exit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:text="Exit" />
+                </RadioGroup>
+            </LinearLayout>
         </LinearLayout>
 
         <androidx.constraintlayout.widget.ConstraintLayout
