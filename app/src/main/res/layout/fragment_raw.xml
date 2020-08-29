@@ -14,31 +14,42 @@
         android:orientation="horizontal">
 
         <Button
+            android:id="@+id/save_message"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:minWidth="60dp"
+            android:text="Save" />
+
+        <Button
             android:id="@+id/copy_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="60dp"
             android:text="Copy All" />
 
         <Button
             android:id="@+id/copy_commands"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Commands" />
+            android:minWidth="60dp"
+            android:text="Cmd" />
 
         <Button
             android:id="@+id/clear_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="60dp"
             android:text="Clear" />
 
         <Button
             android:id="@+id/bottom_message"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:minWidth="40dp"
             android:text="↓" />
     </LinearLayout>
 
-    <ScrollView
+    <androidx.core.widget.NestedScrollView
         android:id="@+id/raw_scroll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -50,5 +61,5 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textIsSelectable="true" />
-    </ScrollView>
+    </androidx.core.widget.NestedScrollView>
 </LinearLayout>

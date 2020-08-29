@@ -369,16 +369,16 @@
                 android:orientation="horizontal">
 
                 <Button
+                    android:id="@+id/metro_default"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Auto Fill" />
+
+                <Button
                     android:id="@+id/metro_apply"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:text="Apply" />
-
-                <Button
-                    android:id="@+id/metro_default"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:text="Default" />
             </LinearLayout>
         </LinearLayout>
 

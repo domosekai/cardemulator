@@ -37,6 +37,7 @@ class HCEService : HostApduService() {
         var cuCustom = emptyMap<String, String>()
         var tuCustom = emptyMap<String, String>()
         val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
+        val sf = SimpleDateFormat("HH:mm:ss.SSS")
     }
 
     override fun onDeactivated(reason: Int) {
@@ -404,7 +405,8 @@ class HCEService : HostApduService() {
                 // Same format for TU and CU
                 result = "00000B2200020000000100" + "E9F0DEEA"
                 if (tran.lc == 11 && metro) {
-                    terminals.value += "$metroLine,$metroStation,$metroRemark,$inGate," +
+                    val s = if (inGate) "出" else "入"
+                    terminals.value += "${sf.format(Date())},$metroLine,$metroStation,$metroRemark,$s," +
                             tran.data.takeLast(12) + "\n"
                     val notification =
                         RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
