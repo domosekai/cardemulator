@@ -42,7 +42,7 @@ class HCEService : HostApduService() {
     override fun onDeactivated(reason: Int) {
         rawMessage.value += "Deactivated: $reason\n\n"
         if (wait) {
-            Timer().schedule(1000) { wait = false }
+            Timer().schedule(600) { wait = false }
         }
     }
 
@@ -81,6 +81,13 @@ class HCEService : HostApduService() {
                 app = 0
                 when (tran.data) {
                     "3F00", "1001" -> result = ""
+                    "325041592E5359532E4444463031" ->
+                        if (tuType > 0) {
+                            result =
+                                "6F49840E325041592E5359532E4444463031A537BF0C3461194F08A000000632010106500A4D4F545F545F4341534887010161174F08A00000063201010550084D4F545F545F4550870102"
+                            app = 2
+                            inTU = true
+                        }
                     "A000000632010105" ->
                         if (tuType > 0) {
                             result =
@@ -393,30 +400,19 @@ class HCEService : HostApduService() {
             // Get challenge
             "0084" -> result = "C620857FF5D967C2"
             // Init for load
-            "8050" ->
-                if (tuType > 0 && app == 2) {
-                    result = "00000B2200020000000100" + "E9F0DEEA"
-                    if (tran.lc == 11 && metro) {
-                        terminals.value += "$metroLine,$metroStation,$metroRemark,$inGate," +
-                                tran.data.takeLast(12) + "\n"
-                        val notification =
-                            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                        val r = RingtoneManager.getRingtone(applicationContext, notification)
-                        r.play()
-                        wait = true
-                    }
-                } else {
-                    result = "00000B2200020000000100" + "E9F0DEEA"
-                    if (tran.lc == 11 && metro) {
-                        terminals.value += "$metroLine,$metroStation,$metroRemark,$inGate," +
-                                tran.data.takeLast(12) + "\n"
-                        val notification =
-                            RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
-                        val r = RingtoneManager.getRingtone(applicationContext, notification)
-                        r.play()
-                        wait = true
-                    }
+            "8050" -> {
+                // Same format for TU and CU
+                result = "00000B2200020000000100" + "E9F0DEEA"
+                if (tran.lc == 11 && metro) {
+                    terminals.value += "$metroLine,$metroStation,$metroRemark,$inGate," +
+                            tran.data.takeLast(12) + "\n"
+                    val notification =
+                        RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
+                    val r = RingtoneManager.getRingtone(applicationContext, notification)
+                    r.play()
+                    wait = true
                 }
+            }
             // Update record
             "80DC" -> result = ""
         }
