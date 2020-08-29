@@ -48,10 +48,14 @@ class HCEService : HostApduService() {
     }
 
     override fun processCommandApdu(commandApdu: ByteArray?, extras: Bundle?): ByteArray {
-        if (wait || commandApdu == null) {
+        if (commandApdu == null) {
             return hexStringToByteArray(STATUS_FAILED)
         }
         val tran = parseAPDU(commandApdu)
+        // Block duplicate read during waiting period
+        if (wait && tran.command == "00A4" && (!metro || cardType == 0 || tuType == 0))
+            return hexStringToByteArray(STATUS_FAILED)
+
         rawMessage.value += df.format(Date()) + "\n"
         when (tran.command) {
             "00B0" -> {
@@ -86,11 +90,9 @@ class HCEService : HostApduService() {
                         if (tuType > 0) {
                             result =
                                 "6F49840E325041592E5359532E4444463031A537BF0C3461194F08A000000632010106500A4D4F545F545F4341534887010161174F08A00000063201010550084D4F545F545F4550870102"
-                            app = 2
-                            inTU = true
                         }
                     "A000000632010105" ->
-                        if (tuType > 0) {
+                        if (tuType > 0 && (!wait || !inTU)) {
                             result =
                                 "6F318408A000000632010105A5259F0801029F0C1E01011000FFFFFFFF02010310517001017090798420190806204012310000"
                             app = 2
@@ -131,7 +133,7 @@ class HCEService : HostApduService() {
                             inTU = false
                         }
                     "A00000000386980701" ->
-                        if (cardType in setOf(TYPE_CU, TYPE_SPTC, TYPE_ZHENJIANG)) {
+                        if (cardType in setOf(TYPE_CU, TYPE_SPTC, TYPE_ZHENJIANG) && !wait) {
                             result =
                                 "6F328409A00000000386980701A5259F0801029F0C1E869820007590FFFF820520007D93847E0526E0B820180724202410160214"
                             inTU = false
@@ -158,7 +160,7 @@ class HCEService : HostApduService() {
             "00B0" -> {
                 // switch by P1, P2 is offset (because bit 8 of P1 is 1)
                 when (tran.p1 and 0x1F) {
-                    0x15 -> result = if (tuType > 0 && app == 2)
+                    0x15 -> result = if (inTU)
                         when (tuType) {
                             TU_BJ -> "01011000FFFFFFFF02010310517005678901234520190806204012310000"
                             TU_NANTONG -> "12343060FFFFFFFF02010310517001017090798420190806204012310000"
@@ -196,7 +198,7 @@ class HCEService : HostApduService() {
                         result =
                             "00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
                     0x17 ->
-                        result =
+                        if (inTU) result =
                             "000001561000100000010100000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
                     0x1A ->
                         if (cardType == TYPE_TFT)
@@ -214,7 +216,7 @@ class HCEService : HostApduService() {
             // READ RECORD
             "00B2" -> {
                 // switch by P1 P2
-                if (tuType > 0 && app == 2) when (tuType) {
+                if (inTU) when (tuType) {
                     TU_BJ -> when (tran.p2 shr 3) {
                         // 0x02 R1
                         0x02 -> if (tran.p1 == 1)
@@ -405,8 +407,9 @@ class HCEService : HostApduService() {
                 // Same format for TU and CU
                 result = "00000B2200020000000100" + "E9F0DEEA"
                 if (tran.lc == 11 && metro) {
-                    val s = if (inGate) "出" else "入"
-                    terminals.value += "${sf.format(Date())},$metroLine,$metroStation,$metroRemark,$s," +
+                    val s = if (inGate) "Out" else "In"
+                    val t = if (inTU) "TU" else "CU"
+                    terminals.value += "${sf.format(Date())},$metroLine,$metroStation,$metroRemark,$t,$s," +
                             tran.data.takeLast(12) + "\n"
                     val notification =
                         RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)

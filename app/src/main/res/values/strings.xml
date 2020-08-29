@@ -32,5 +32,6 @@
         <item>PSM Scan</item>
         <item>SH Metro</item>
         <item>TU Metro</item>
+        <item>CU/TU Metro</item>
     </string-array>
 </resources>

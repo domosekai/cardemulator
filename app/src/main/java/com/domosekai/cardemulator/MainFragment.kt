@@ -241,6 +241,10 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         spinner1.setSelection(0, true)
                         spinner2.setSelection(2, true)
                     }
+                    "CU/TU Metro" -> {
+                        spinner1.setSelection(4, true)
+                        spinner2.setSelection(2, true)
+                    }
                 }
                 psm.visibility =
                     if (p0.getItemAtPosition(p2) == "PSM Scan") View.VISIBLE else View.GONE
