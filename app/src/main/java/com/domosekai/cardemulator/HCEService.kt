@@ -31,6 +31,7 @@ class HCEService : HostApduService() {
         var metroTimeIn = ""
         var prefix = ""
         var wait = false
+        var waitID = 0
         val rawMessage = MutableLiveData("")
         var commands = ""
         var terminals = MutableLiveData("")
@@ -41,9 +42,14 @@ class HCEService : HostApduService() {
     }
 
     override fun onDeactivated(reason: Int) {
+        rawMessage.value += df.format(Date()) + "\n"
         rawMessage.value += "Deactivated: $reason\n\n"
         if (wait) {
-            Timer().schedule(600) { wait = false }
+            waitID++
+            val current = waitID
+            Timer().schedule(600) {
+                if (current == waitID) wait = false
+            }
         }
     }
 
@@ -58,12 +64,10 @@ class HCEService : HostApduService() {
 
         rawMessage.value += df.format(Date()) + "\n"
         when (tran.command) {
-            "00B0" -> {
-                rawMessage.value += "Read Info ${"%02X".format(tran.p1 and 0x1F)}\n"
-            }
-            "00B2" -> {
-                rawMessage.value += "Read Record ${"%02X".format(tran.p2 shr 3)} #${tran.p1}\n"
-            }
+            "00B0" -> rawMessage.value += "Read Info ${"%02X".format(tran.p1 and 0x1F)}\n"
+            "00B2" -> rawMessage.value += "Read Record ${"%02X".format(tran.p2 shr 3)} #${tran.p1}\n"
+            "8050" -> rawMessage.value += "Initialize\n"
+            "80DC" -> rawMessage.value += "Update Record ${"%02X".format(tran.p2 shr 3)} #${tran.p1}\n"
         }
         rawMessage.value += "Command: ${tran.query}\n"
         commands += tran.query + "\n"
@@ -402,7 +406,10 @@ class HCEService : HostApduService() {
             }
             // Get challenge
             "0084" -> result = "C620857FF5D967C2"
+            // External auth
             "0082" -> result = ""
+            // Get data
+            "80CA" -> result = if (inTU) "" else "850526E0B885AC58FC"
             // Init for load
             "8050" -> {
                 // Same format for TU and CU
