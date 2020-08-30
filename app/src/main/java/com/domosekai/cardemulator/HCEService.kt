@@ -402,6 +402,7 @@ class HCEService : HostApduService() {
             }
             // Get challenge
             "0084" -> result = "C620857FF5D967C2"
+            "0082" -> result = ""
             // Init for load
             "8050" -> {
                 // Same format for TU and CU
