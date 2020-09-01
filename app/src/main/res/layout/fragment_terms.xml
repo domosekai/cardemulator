@@ -42,6 +42,79 @@
             android:text="↓" />
     </LinearLayout>
 
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="0.35"
+            android:gravity="end"
+            android:text="Card type"
+            android:textSize="16sp" />
+
+        <RadioGroup
+            android:id="@+id/radio_card"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.65"
+            android:checkedButton="@id/radio_entrance"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_cu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="CU" />
+
+            <RadioButton
+                android:id="@+id/radio_tu"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="TU" />
+        </RadioGroup>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginEnd="16dp"
+            android:layout_weight="0.35"
+            android:gravity="end"
+            android:text="Gate type"
+            android:textSize="16sp" />
+
+        <RadioGroup
+            android:id="@+id/radio_gate"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.65"
+            android:checkedButton="@id/radio_entrance"
+            android:orientation="horizontal">
+
+            <RadioButton
+                android:id="@+id/radio_entrance"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Entrance" />
+
+            <RadioButton
+                android:id="@+id/radio_exit"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="Exit" />
+        </RadioGroup>
+    </LinearLayout>
+
     <androidx.core.widget.NestedScrollView
         android:id="@+id/terms_scroll"
         android:layout_width="match_parent"

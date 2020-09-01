@@ -18,7 +18,8 @@ const val TYPE_SUZ_CIKA = 4
 const val TYPE_SZT = 5
 const val TYPE_TFT = 6
 const val TYPE_SPTC = 7
-const val TYPE_ZHENJIANG = 8
+const val TYPE_HZ = 8
+const val TYPE_ZHENJIANG = 9
 const val TYPE_CU = 99
 
 const val TU_BJ = 1
@@ -42,6 +43,14 @@ fun parseAPDU(apdu: ByteArray): Transaction {
         tran.lc = 0
     }
     return tran
+}
+
+fun getRecordNo(p1: Int, p2: Int): String {
+    return if (p2 % 8 == 0) {
+        "starts with ${"%02X".format(p1)}"
+    } else {
+        "#$p1"
+    }
 }
 
 fun byteArrayToHexString(bytes: ByteArray): String {

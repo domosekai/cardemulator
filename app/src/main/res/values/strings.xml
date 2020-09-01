@@ -18,6 +18,7 @@
         <item>Suzhou Cika</item>
         <item>BJ</item>
         <item>SPTC</item>
+        <item>HZ</item>
         <item>Zhenjiang</item>
     </string-array>
 
@@ -31,7 +32,9 @@
         <item>None</item>
         <item>PSM Scan</item>
         <item>SH Metro</item>
+        <item>CU Metro</item>
         <item>TU Metro</item>
+        <item>HZ Metro</item>
         <item>CU/TU Metro</item>
     </string-array>
 </resources>

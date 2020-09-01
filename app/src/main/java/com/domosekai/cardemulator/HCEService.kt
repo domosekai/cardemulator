@@ -17,6 +17,8 @@ class HCEService : HostApduService() {
         const val INS_NOT_SUPPORTED = "6D00"
         var cardType = 0
         var tuType = 0
+        var cuOnly = false
+        var tuOnly = false
         var cuIssuer = ""
         var tuIssuer = ""
         var app = 0
@@ -27,8 +29,8 @@ class HCEService : HostApduService() {
         var metroStation = ""
         var metroRemark = ""
         var metroCity = ""
+        var metroInstitution = ""
         var metroStationIn = ""
-        var metroTimeIn = ""
         var prefix = ""
         var wait = false
         var waitID = 0
@@ -39,6 +41,8 @@ class HCEService : HostApduService() {
         var tuCustom = emptyMap<String, String>()
         val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
         val sf = SimpleDateFormat("HH:mm:ss.SSS")
+        val df1 = SimpleDateFormat("yyyyMMddHHmmss")
+        val df2 = SimpleDateFormat("yyyyMMdd")
     }
 
     override fun onDeactivated(reason: Int) {
@@ -65,9 +69,11 @@ class HCEService : HostApduService() {
         rawMessage.value += df.format(Date()) + "\n"
         when (tran.command) {
             "00B0" -> rawMessage.value += "Read Info ${"%02X".format(tran.p1 and 0x1F)}\n"
-            "00B2" -> rawMessage.value += "Read Record ${"%02X".format(tran.p2 shr 3)} #${tran.p1}\n"
+            "00B2" -> rawMessage.value += "Read Record ${"%02X".format(tran.p2 shr 3)} " +
+                    "${getRecordNo(tran.p1, tran.p2)}\n"
             "8050" -> rawMessage.value += "Initialize\n"
-            "80DC" -> rawMessage.value += "Update Record ${"%02X".format(tran.p2 shr 3)} #${tran.p1}\n"
+            "80DC" -> rawMessage.value += "Update Record ${"%02X".format(tran.p2 shr 3)} " +
+                    "${getRecordNo(tran.p1, tran.p2)}\n"
         }
         rawMessage.value += "Command: ${tran.query}\n"
         commands += tran.query + "\n"
@@ -90,13 +96,18 @@ class HCEService : HostApduService() {
                 app = 0
                 when (tran.data) {
                     "3F00", "1001" -> result = ""
+                    "315055422E5359532E4444463031" ->
+                        if (cardType == TYPE_HZ && !wait && !tuOnly) {
+                            result = "6F15840E315055422E5359532E4444463031A503880101"
+                            inTU = false
+                        }
                     "325041592E5359532E4444463031" ->
-                        if (tuType > 0) {
+                        if (tuType > 0 && !wait && !cuOnly) {
                             result =
                                 "6F49840E325041592E5359532E4444463031A537BF0C3461194F08A000000632010106500A4D4F545F545F4341534887010161174F08A00000063201010550084D4F545F545F4550870102"
                         }
                     "A000000632010105" ->
-                        if (tuType > 0 && (!wait || !inTU)) {
+                        if (tuType > 0 && !wait && !cuOnly) {
                             result =
                                 "6F318408A000000632010105A5259F0801029F0C1E01011000FFFFFFFF02010310517001017090798420190806204012310000"
                             app = 2
@@ -137,10 +148,31 @@ class HCEService : HostApduService() {
                             inTU = false
                         }
                     "A00000000386980701" ->
-                        if (cardType in setOf(TYPE_CU, TYPE_SPTC, TYPE_ZHENJIANG) && !wait) {
+                        if (!wait && !tuOnly) when (cardType) {
+                            TYPE_CU, TYPE_SPTC -> {
+                                result =
+                                    "6F328409A00000000386980701A5259F0801029F0C1E869820007590FFFF820520007D93847E0526E0B820180724202410160214"
+                                inTU = false
+                            }
+                            TYPE_HZ -> {
+                                result =
+                                    "6F2E8409A00000000386980701A5219F0C1E847531000000000000003100310000015107302820191225206912250000"
+                                inTU = false
+                            }
+                        }
+                    "A00000000386980702" ->
+                        if (cardType == TYPE_HZ) {
                             result =
-                                "6F328409A00000000386980701A5259F0801029F0C1E869820007590FFFF820520007D93847E0526E0B820180724202410160214"
+                                "6F308409A00000000386980702A5239F0C200001310000000000000000000000000000000000000000000000000000000000"
                             inTU = false
+                            app = 2
+                        }
+                    "A00000000386980703" ->
+                        if (cardType == TYPE_HZ) {
+                            result =
+                                "6F308409A00000000386980703A5239F0C20000131000000000000000000000000000000000000000000000000000000000000000000"
+                            inTU = false
+                            app = 1
                         }
                     "D156000015B9ABB9B2D3A6D3C3" ->
                         if (cardType == TYPE_TFT) {
@@ -168,7 +200,7 @@ class HCEService : HostApduService() {
                         when (tuType) {
                             TU_BJ -> "01011000FFFFFFFF02010310517005678901234520190806204012310000"
                             TU_NANTONG -> "12343060FFFFFFFF02010310517001017090798420190806204012310000"
-                            else -> tuIssuer + "FFFFFFFF02010310412345678901234520190806204012310000"
+                            else -> tuIssuer + "FFFFFFFF02010310517005678901234520190806204012310000"
                         }
                     else when (cardType) {
                         TYPE_YCT -> "FFFFFFFFFFFFFFFF5100000756695739030002FFFFFFFF201509162025123120150916218121010100000000052B000101015100000756695739030000000000FF8000FFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFFF"
@@ -181,6 +213,7 @@ class HCEService : HostApduService() {
                             else
                                 "544661000201000003000000610002018010238120170927203003040102000000"
                         TYPE_SPTC -> "869820007590FFFF820520008983D02F2495D0EC20200103202505111B14"
+                        TYPE_HZ -> "847531000000000000003100310000015107302820191225206912250000"
                         else -> null
                     }
                     0x05 -> result = when (cardType) {
@@ -188,6 +221,7 @@ class HCEService : HostApduService() {
                         TYPE_ZHENJIANG -> "869821207590FFFF050021203030343739313930201902220000000000000000333231313030343739313930"
                         //11 -> "06004743010F650501"
                         TYPE_SUZ_CIKA -> "06004477010E100201" // BALANCE 0, EXPIRY 2019.12
+                        TYPE_HZ -> "1700002099010101E000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
                         else -> null
                     }
                     0x06 -> result = when (cardType) {
@@ -280,9 +314,10 @@ class HCEService : HostApduService() {
                     TU_GEN -> when (tran.p2 shr 3) {
                         0x1A -> result = when (tran.p1) {
                             1 -> if (metro && inGate)
-                                "27017D010100000000000000000001" + metroCity.substring(4, 8) +
-                                        "0000" + metroCity + "FFFFFFFF" + "0000000000000000" + metroStationIn +
-                                        "000000000000000000000000000000000000000000000000" + metroTimeIn +
+                                "27017D010100000000000000000001" + metroCity + "0000" +
+                                        metroInstitution + "FFFFFFFF" + "0000000000000000" + metroStationIn +
+                                        "000000000000000000000000000000000000000000000000" +
+                                        df1.format(Date(Date().time - 30 * 60 * 1000)) +
                                         "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
                             else
                                 "27017D0101000000000000043835025810581012205810FFFFFFFF122058100000000001007513090090251000000000000000000041310173800800004131013299462019120711350020191207115635000000BE1E0900000000000004B50000011D0000000000000000000000000000000000000000000000000000000000"
@@ -292,6 +327,27 @@ class HCEService : HostApduService() {
                     }
                 }
                 else when (cardType) {
+                    TYPE_HZ -> when (app) {
+                        0 -> when (tran.p2) {
+                            // 0x17 first occurence
+                            0xB8 -> result = when (tran.p1) {
+                                1 -> "012E000000310004001002000000005E04A8E90000000000000EF90100015E04A8E90100000020590000000104001002"
+                                6 -> if (metro && inGate)
+                                    "062E0031013100040253160000000005360118" + "%08X".format(Date().time / 1000 - 30 * 60 - 946656000) +
+                                            "0000000005" + df2.format(Date(Date().time - 30 * 60 * 1000)) +
+                                            "00000000000005360106000000B60000"
+                                else "062E003103310001029189000000B60107011225978607000000B6052019122600000000000001060213000000B60000"
+                                else -> null
+                            }
+                        }
+                        else -> when (tran.p2) {
+                            0xB8 -> result = when (tran.p1) {
+                                1 -> "012E00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                                6 -> "062E00000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
+                                else -> null
+                            }
+                        }
+                    }
                     TYPE_YCT -> when (tran.p2 shr 3) {
                         // 0x08 R1 & R17 (p2's last 3 bits 0 means P1 is identifier: find first C8 in 0x08)
                         0x08 -> result = when (tran.p1) {
@@ -409,11 +465,14 @@ class HCEService : HostApduService() {
             // External auth
             "0082" -> result = ""
             // Get data
-            "80CA" -> result = if (inTU) "" else "850526E0B885AC58FC"
+            "80CA" -> result =
+                if (inTU) ""
+                else if (cardType == TYPE_HZ) "04FFF83E302F6EB256"
+                else "850526E0B885AC58FC"
             // Init for load
             "8050" -> {
-                // Same format for TU and CU
-                result = "00000B2200020000000100" + "E9F0DEEA"
+                // Same format for TU and CU, do not respond to prevent error voice
+                //result = "00000B2200020000000100" + "E9F0DEEA"
                 if (tran.lc == 11 && metro) {
                     val s = if (inGate) "Out" else "In"
                     val t = if (inTU) "TU" else "CU"

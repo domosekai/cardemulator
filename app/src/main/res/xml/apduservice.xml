@@ -6,12 +6,16 @@
         android:description="@string/aiddescription">
         <aid-filter android:name="F04E66E75C02D8" />
         <aid-filter android:name="A00000000386980701" />
+        <aid-filter android:name="A00000000386980702" />
+        <aid-filter android:name="A00000000386980703" />
         <aid-filter android:name="5041592E41505059" />
         <aid-filter android:name="5041592E5449434C" />
         <aid-filter android:name="A000000632010105" />
+        <aid-filter android:name="A000000632010106" />
         <aid-filter android:name="535558494E2E4444463031" />
         <aid-filter android:name="D156000015B9ABB9B2D3A6D3C3" />
         <aid-filter android:name="535A504B5F5A5959" />
+        <aid-filter android:name="315055422E5359532E4444463031" />
         <aid-filter android:name="315041592E5359532E4444463031" />
         <aid-filter android:name="325041592E5359532E4444463031" />
     </aid-group>

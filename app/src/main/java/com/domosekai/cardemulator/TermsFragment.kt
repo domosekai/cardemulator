@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.RadioGroup
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.widget.NestedScrollView
@@ -53,6 +54,20 @@ class TermsFragment : Fragment() {
                 requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip: ClipData = ClipData.newPlainText("simple text", HCEService.terminals.value)
             clipboard.setPrimaryClip(clip)
+        }
+
+        val rg = root.findViewById<RadioGroup>(R.id.radio_gate)
+        if (HCEService.inGate) rg.check(R.id.radio_exit) else rg.check(R.id.radio_entrance)
+        rg.setOnCheckedChangeListener { radioGroup, i ->
+            HCEService.inGate = i == R.id.radio_exit
+        }
+
+        val rg2 = root.findViewById<RadioGroup>(R.id.radio_card)
+        if (HCEService.cuOnly) rg2.check(R.id.radio_cu)
+        else if (HCEService.tuOnly) rg2.check(R.id.radio_tu)
+        rg2.setOnCheckedChangeListener { radioGroup, i ->
+            HCEService.cuOnly = i == R.id.radio_cu
+            HCEService.tuOnly = i == R.id.radio_tu
         }
 
         val scrollView = root.findViewById<NestedScrollView>(R.id.terms_scroll)

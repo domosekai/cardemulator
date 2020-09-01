@@ -10,8 +10,6 @@ import android.view.ViewGroup
 import android.widget.*
 import androidx.constraintlayout.widget.ConstraintLayout
 import androidx.fragment.app.Fragment
-import java.text.SimpleDateFormat
-import java.util.*
 
 class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
@@ -154,35 +152,39 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         // Metro stations
         val metroLine = root.findViewById<EditText>(R.id.metro_line)
+        if (HCEService.metroLine != "") metroLine.setText(HCEService.metroLine)
         val metroStation = root.findViewById<EditText>(R.id.metro_station)
+        if (HCEService.metroStation != "") metroStation.setText(HCEService.metroStation)
         val metroRemark = root.findViewById<EditText>(R.id.metro_remark)
+        if (HCEService.metroRemark != "") metroRemark.setText(HCEService.metroRemark)
         val metroCity = root.findViewById<EditText>(R.id.metro_city)
+        if (HCEService.metroCity != "") metroCity.setText(HCEService.metroCity)
+        else HCEService.metroCity = metroCity.hint.toString()
+        val metroInstitution = root.findViewById<EditText>(R.id.metro_institution)
+        if (HCEService.metroInstitution != "") metroInstitution.setText(HCEService.metroInstitution)
+        else HCEService.metroInstitution = metroInstitution.hint.toString()
         val metroStationIn = root.findViewById<EditText>(R.id.metro_station_in)
-        val metroTimeIn = root.findViewById<EditText>(R.id.metro_time_in)
-        val rg = root.findViewById<RadioGroup>(R.id.radio_gate)
-        rg.setOnCheckedChangeListener { radioGroup, i ->
-            HCEService.inGate = i == R.id.radio_exit
-        }
-        val df = SimpleDateFormat("yyyyMMddHHmmss")
+        if (HCEService.metroStationIn != "") metroStationIn.setText(HCEService.metroStationIn)
+        else HCEService.metroStationIn = metroStationIn.hint.toString()
         val metroApplyButton = root.findViewById<Button>(R.id.metro_apply)
         metroApplyButton.setOnClickListener {
             HCEService.metroLine = metroLine.text.toString()
             HCEService.metroStation = metroStation.text.toString()
             HCEService.metroRemark = metroRemark.text.toString()
-            if (metroCity.text.length == 8) {
+            if (metroCity.text.length == 4) {
                 HCEService.metroCity = metroCity.text.toString()
                 metroCity.setTextColor(pos.textColors)
             } else {
                 metroCity.setTextColor(Color.RED)
             }
+            if (metroInstitution.text.length == 8) {
+                HCEService.metroInstitution = metroInstitution.text.toString()
+                metroInstitution.setTextColor(pos.textColors)
+            } else {
+                metroInstitution.setTextColor(Color.RED)
+            }
             if (metroStationIn.text.length == 16) {
                 HCEService.metroStationIn = metroStationIn.text.toString()
-                metroStationIn.setTextColor(pos.textColors)
-            } else {
-                metroStationIn.setTextColor(Color.RED)
-            }
-            if (metroTimeIn.text.length == 14) {
-                HCEService.metroTimeIn = metroTimeIn.text.toString()
                 metroStationIn.setTextColor(pos.textColors)
             } else {
                 metroStationIn.setTextColor(Color.RED)
@@ -192,10 +194,10 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
         metroDefaultButton.setOnClickListener {
             metroCity.setText(metroCity.hint)
             metroCity.setTextColor(pos.textColors)
+            metroInstitution.setText(metroInstitution.hint)
+            metroInstitution.setTextColor(pos.textColors)
             metroStationIn.setText(metroStationIn.hint)
             metroStationIn.setTextColor(pos.textColors)
-            metroTimeIn.setText(df.format(Date(Date().time - 30 * 60 * 1000)))
-            metroTimeIn.setTextColor(pos.textColors)
         }
         return root
     }
@@ -213,6 +215,7 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     "Suzhou Cika" -> HCEService.cardType = TYPE_SUZ_CIKA
                     "BJ" -> HCEService.cardType = TYPE_BJ
                     "SPTC" -> HCEService.cardType = TYPE_SPTC
+                    "HZ" -> HCEService.cardType = TYPE_HZ
                     "Zhenjiang" -> HCEService.cardType = TYPE_ZHENJIANG
                 }
                 cu_more.visibility =
@@ -237,8 +240,16 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
                         spinner1.setSelection(8, true)
                         spinner2.setSelection(0, true)
                     }
+                    "CU Metro" -> {
+                        spinner1.setSelection(4, true)
+                        spinner2.setSelection(0, true)
+                    }
                     "TU Metro" -> {
                         spinner1.setSelection(0, true)
+                        spinner2.setSelection(2, true)
+                    }
+                    "HZ Metro" -> {
+                        spinner1.setSelection(9, true)
                         spinner2.setSelection(2, true)
                     }
                     "CU/TU Metro" -> {

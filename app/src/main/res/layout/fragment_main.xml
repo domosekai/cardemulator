@@ -271,29 +271,15 @@
                     android:layout_marginEnd="16dp"
                     android:layout_weight="0.35"
                     android:gravity="end"
-                    android:text="Gate type"
+                    android:text="City"
                     android:textSize="16sp" />
 
-                <RadioGroup
-                    android:id="@+id/radio_gate"
+                <EditText
+                    android:id="@+id/metro_city"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.65"
-                    android:checkedButton="@id/radio_entrance"
-                    android:orientation="horizontal">
-
-                    <RadioButton
-                        android:id="@+id/radio_entrance"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Entrance" />
-
-                    <RadioButton
-                        android:id="@+id/radio_exit"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="Exit" />
-                </RadioGroup>
+                    android:hint="3100" />
             </LinearLayout>
 
             <LinearLayout
@@ -311,11 +297,11 @@
                     android:textSize="16sp" />
 
                 <EditText
-                    android:id="@+id/metro_city"
+                    android:id="@+id/metro_institution"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.65"
-                    android:hint="01423050" />
+                    android:hint="01663310" />
             </LinearLayout>
 
             <LinearLayout
@@ -337,29 +323,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.65"
-                    android:hint="4112305000000151" />
-            </LinearLayout>
-
-            <LinearLayout
-                android:layout_width="match_parent"
-                android:layout_height="wrap_content"
-                android:orientation="horizontal">
-
-                <TextView
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_marginEnd="16dp"
-                    android:layout_weight="0.35"
-                    android:gravity="end"
-                    android:text="Entry time"
-                    android:textSize="16sp" />
-
-                <EditText
-                    android:id="@+id/metro_time_in"
-                    android:layout_width="0dp"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="0.65"
-                    android:hint="20191105173423" />
+                    android:hint="0000000005360103" />
             </LinearLayout>
 
             <LinearLayout
