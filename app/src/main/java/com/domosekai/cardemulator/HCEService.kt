@@ -40,7 +40,6 @@ class HCEService : HostApduService() {
         var cuCustom = emptyMap<String, String>()
         var tuCustom = emptyMap<String, String>()
         val df = SimpleDateFormat("yyyy-MM-dd HH:mm:ss.SSS")
-        val sf = SimpleDateFormat("HH:mm:ss.SSS")
         val df1 = SimpleDateFormat("yyyyMMddHHmmss")
         val df2 = SimpleDateFormat("yyyyMMdd")
     }
@@ -68,11 +67,13 @@ class HCEService : HostApduService() {
 
         rawMessage.value += df.format(Date()) + "\n"
         when (tran.command) {
-            "00B0" -> rawMessage.value += "Read Info ${"%02X".format(tran.p1 and 0x1F)}\n"
-            "00B2" -> rawMessage.value += "Read Record ${"%02X".format(tran.p2 shr 3)} " +
+            "00B0" -> rawMessage.value += "READ INFO ${"%02X".format(tran.p1 and 0x1F)}\n"
+            "00B2" -> rawMessage.value += "READ RECORD ${"%02X".format(tran.p2 shr 3)} " +
                     "${getRecordNo(tran.p1, tran.p2)}\n"
-            "8050" -> rawMessage.value += "Initialize\n"
-            "80DC" -> rawMessage.value += "Update Record ${"%02X".format(tran.p2 shr 3)} " +
+            "80CA" -> rawMessage.value += "GET DATA\n"
+            "8050" -> rawMessage.value += "INIT\n"
+            "805C" -> rawMessage.value += "GET BALANCE\n"
+            "80DC" -> rawMessage.value += "UPDATE RECORD ${"%02X".format(tran.p2 shr 3)} " +
                     "${getRecordNo(tran.p1, tran.p2)}\n"
         }
         rawMessage.value += "Command: ${tran.query}\n"
@@ -471,12 +472,12 @@ class HCEService : HostApduService() {
                 else "850526E0B885AC58FC"
             // Init for load
             "8050" -> {
-                // Same format for TU and CU, do not respond to prevent error voice
+                // Same format for TU and CU
                 //result = "00000B2200020000000100" + "E9F0DEEA"
                 if (tran.lc == 11 && metro) {
                     val s = if (inGate) "Out" else "In"
                     val t = if (inTU) "TU" else "CU"
-                    terminals.value += "${sf.format(Date())},$metroLine,$metroStation,$metroRemark,$t,$s," +
+                    terminals.value += "${df.format(Date())},$metroLine,$metroStation,$metroRemark,$t,$s," +
                             tran.data.takeLast(12) + "\n"
                     val notification =
                         RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
