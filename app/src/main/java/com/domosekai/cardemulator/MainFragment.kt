@@ -171,8 +171,20 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
         metroStationIn = root.findViewById<EditText>(R.id.metro_station_in)
         if (HCEService.metroStationIn != "") metroStationIn.setText(HCEService.metroStationIn)
         else HCEService.metroStationIn = metroStationIn.hint.toString()
+        metroDefaultButton = root.findViewById<Button>(R.id.metro_default)
+        metroDefaultButton.setOnClickListener {
+            metroCity.setText(metroCity.hint)
+            metroCity.setTextColor(pos.textColors)
+            metroInstitution.setText(metroInstitution.hint)
+            metroInstitution.setTextColor(pos.textColors)
+            metroStationIn.setText(metroStationIn.hint)
+            metroStationIn.setTextColor(pos.textColors)
+        }
         metroApplyButton = root.findViewById<Button>(R.id.metro_apply)
         metroApplyButton.setOnClickListener {
+            if (metroLine.text.isEmpty() && metroInstitution.text.isEmpty() && metroStationIn.text.isEmpty()) {
+                metroDefaultButton.performClick()
+            }
             HCEService.metroLine = metroLine.text.toString()
             HCEService.metroStation = metroStation.text.toString()
             HCEService.metroRemark = metroRemark.text.toString()
@@ -194,15 +206,6 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
             } else {
                 metroStationIn.setTextColor(Color.RED)
             }
-        }
-        metroDefaultButton = root.findViewById<Button>(R.id.metro_default)
-        metroDefaultButton.setOnClickListener {
-            metroCity.setText(metroCity.hint)
-            metroCity.setTextColor(pos.textColors)
-            metroInstitution.setText(metroInstitution.hint)
-            metroInstitution.setTextColor(pos.textColors)
-            metroStationIn.setText(metroStationIn.hint)
-            metroStationIn.setTextColor(pos.textColors)
         }
         return root
     }
