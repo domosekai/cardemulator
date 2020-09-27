@@ -4,6 +4,7 @@ import android.graphics.Color
 import android.os.Bundle
 import android.text.Editable
 import android.text.TextWatcher
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -22,6 +23,11 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private lateinit var cu_generic: LinearLayout
     private lateinit var tu_generic: LinearLayout
     private lateinit var metro: LinearLayout
+    private lateinit var metroCity: EditText
+    private lateinit var metroInstitution: EditText
+    private lateinit var metroStationIn: EditText
+    private lateinit var metroApplyButton: Button
+    private lateinit var metroDefaultButton: Button
 
     override fun onCreateView(
         inflater: LayoutInflater,
@@ -38,7 +44,6 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             // Apply the adapter to the spinner
             spinner1.adapter = adapter
-            spinner1.onItemSelectedListener = this
         }
         spinner2 = root.findViewById(R.id.card_type2)
         ArrayAdapter.createFromResource(
@@ -46,7 +51,6 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner2.adapter = adapter
-            spinner2.onItemSelectedListener = this
         }
         spinner3 = root.findViewById(R.id.special_feature)
         ArrayAdapter.createFromResource(
@@ -54,7 +58,6 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
         ).also { adapter ->
             adapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item)
             spinner3.adapter = adapter
-            spinner3.onItemSelectedListener = this
         }
         psm = root.findViewById(R.id.psm_scan)
         cu_more = root.findViewById(R.id.cu_more)
@@ -94,7 +97,8 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         // CU more
         val cuIssuer = root.findViewById<EditText>(R.id.cu_issuer)
-        HCEService.cuIssuer = cuIssuer.text.toString()
+        if (HCEService.cuIssuer != "") cuIssuer.setText(HCEService.cuIssuer)
+        else HCEService.cuIssuer = cuIssuer.text.toString()
         val cuAddButton = root.findViewById<Button>(R.id.cu_add)
         cuAddButton.setOnClickListener {
             val line = inflater.inflate(R.layout.custom_data, container, false)
@@ -123,7 +127,8 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
 
         // TU more
         val tuIssuer = root.findViewById<EditText>(R.id.tu_issuer)
-        HCEService.tuIssuer = tuIssuer.text.toString()
+        if (HCEService.tuIssuer != "") tuIssuer.setText(HCEService.tuIssuer)
+        else HCEService.tuIssuer = tuIssuer.text.toString()
         val tuAddButton = root.findViewById<Button>(R.id.tu_add)
         tuAddButton.setOnClickListener {
             val line = inflater.inflate(R.layout.custom_data, container, false)
@@ -157,16 +162,16 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
         if (HCEService.metroStation != "") metroStation.setText(HCEService.metroStation)
         val metroRemark = root.findViewById<EditText>(R.id.metro_remark)
         if (HCEService.metroRemark != "") metroRemark.setText(HCEService.metroRemark)
-        val metroCity = root.findViewById<EditText>(R.id.metro_city)
+        metroCity = root.findViewById<EditText>(R.id.metro_city)
         if (HCEService.metroCity != "") metroCity.setText(HCEService.metroCity)
         else HCEService.metroCity = metroCity.hint.toString()
-        val metroInstitution = root.findViewById<EditText>(R.id.metro_institution)
+        metroInstitution = root.findViewById<EditText>(R.id.metro_institution)
         if (HCEService.metroInstitution != "") metroInstitution.setText(HCEService.metroInstitution)
         else HCEService.metroInstitution = metroInstitution.hint.toString()
-        val metroStationIn = root.findViewById<EditText>(R.id.metro_station_in)
+        metroStationIn = root.findViewById<EditText>(R.id.metro_station_in)
         if (HCEService.metroStationIn != "") metroStationIn.setText(HCEService.metroStationIn)
         else HCEService.metroStationIn = metroStationIn.hint.toString()
-        val metroApplyButton = root.findViewById<Button>(R.id.metro_apply)
+        metroApplyButton = root.findViewById<Button>(R.id.metro_apply)
         metroApplyButton.setOnClickListener {
             HCEService.metroLine = metroLine.text.toString()
             HCEService.metroStation = metroStation.text.toString()
@@ -190,7 +195,7 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 metroStationIn.setTextColor(Color.RED)
             }
         }
-        val metroDefaultButton = root.findViewById<Button>(R.id.metro_default)
+        metroDefaultButton = root.findViewById<Button>(R.id.metro_default)
         metroDefaultButton.setOnClickListener {
             metroCity.setText(metroCity.hint)
             metroCity.setTextColor(pos.textColors)
@@ -200,6 +205,14 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
             metroStationIn.setTextColor(pos.textColors)
         }
         return root
+    }
+
+    override fun onResume() {
+        super.onResume()
+        Log.i("MainFragment", "resumed")
+        spinner1.onItemSelectedListener = this
+        spinner2.onItemSelectedListener = this
+        spinner3.onItemSelectedListener = this
     }
 
     override fun onItemSelected(p0: AdapterView<*>?, p1: View?, p2: Int, p3: Long) {
@@ -239,26 +252,52 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     "SH Metro" -> {
                         spinner1.setSelection(8, true)
                         spinner2.setSelection(0, true)
+                        HCEService.cuOnly = true
+                        HCEService.tuOnly = false
                     }
                     "CU Metro" -> {
                         spinner1.setSelection(4, true)
                         spinner2.setSelection(0, true)
+                        HCEService.cuOnly = true
+                        HCEService.tuOnly = false
                     }
                     "TU Metro" -> {
                         spinner1.setSelection(0, true)
                         spinner2.setSelection(2, true)
+                        HCEService.cuOnly = false
+                        HCEService.tuOnly = true
+                    }
+                    "NN Metro" -> {
+                        Log.i("MainFragment", "NN selected")
+                        spinner1.setSelection(0, true)
+                        spinner2.setSelection(2, true)
+                        HCEService.cuOnly = false
+                        HCEService.tuOnly = true
+                        metroCity.hint = "6110"
+                        metroInstitution.hint = "14026110"
+                        metroStationIn.hint = "0000000000000117"
+                    }
+                    "CD Metro" -> {
+                        spinner1.setSelection(0, true)
+                        spinner2.setSelection(2, true)
+                        HCEService.cuOnly = false
+                        HCEService.tuOnly = true
+                        metroCity.hint = "6510"
+                        metroInstitution.hint = "04176510"
+                        metroStationIn.hint = "0000000033540125"
                     }
                     "HZ Metro" -> {
                         spinner1.setSelection(9, true)
                         spinner2.setSelection(2, true)
+                        metroCity.hint = "3100"
+                        metroInstitution.hint = "01663310"
+                        metroStationIn.hint = "0000000005360103"
                     }
                     "CU/TU Metro" -> {
                         spinner1.setSelection(4, true)
                         spinner2.setSelection(2, true)
                     }
                 }
-                psm.visibility =
-                    if (p0.getItemAtPosition(p2) == "PSM Scan") View.VISIBLE else View.GONE
                 if (p0.getItemAtPosition(p2).toString().contains("Metro")) {
                     metro.visibility = View.VISIBLE
                     HCEService.metro = true
@@ -266,6 +305,8 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     metro.visibility = View.GONE
                     HCEService.metro = false
                 }
+                psm.visibility =
+                    if (p0.getItemAtPosition(p2) == "PSM Scan") View.VISIBLE else View.GONE
             }
         }
     }

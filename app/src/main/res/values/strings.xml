@@ -30,11 +30,13 @@
 
     <string-array name="features">
         <item>None</item>
-        <item>PSM Scan</item>
         <item>SH Metro</item>
+        <item>HZ Metro</item>
+        <item>NN Metro</item>
+        <item>CD Metro</item>
         <item>CU Metro</item>
         <item>TU Metro</item>
-        <item>HZ Metro</item>
         <item>CU/TU Metro</item>
+        <item>PSM Scan</item>
     </string-array>
 </resources>
