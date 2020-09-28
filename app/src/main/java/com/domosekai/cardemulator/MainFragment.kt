@@ -158,8 +158,8 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
         // Metro stations
         val metroLine = root.findViewById<EditText>(R.id.metro_line)
         if (HCEService.metroLine != "") metroLine.setText(HCEService.metroLine)
-        val metroStation = root.findViewById<EditText>(R.id.metro_station)
-        if (HCEService.metroStation != "") metroStation.setText(HCEService.metroStation)
+        val metroStationName = root.findViewById<EditText>(R.id.metro_station)
+        if (HCEService.metroStationName != "") metroStationName.setText(HCEService.metroStationName)
         val metroRemark = root.findViewById<EditText>(R.id.metro_remark)
         if (HCEService.metroRemark != "") metroRemark.setText(HCEService.metroRemark)
         metroCity = root.findViewById<EditText>(R.id.metro_city)
@@ -182,11 +182,11 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
         }
         metroApplyButton = root.findViewById<Button>(R.id.metro_apply)
         metroApplyButton.setOnClickListener {
-            if (metroLine.text.isEmpty() && metroInstitution.text.isEmpty() && metroStationIn.text.isEmpty()) {
+            if (metroCity.text.isEmpty() && metroInstitution.text.isEmpty() && metroStationIn.text.isEmpty()) {
                 metroDefaultButton.performClick()
             }
             HCEService.metroLine = metroLine.text.toString()
-            HCEService.metroStation = metroStation.text.toString()
+            HCEService.metroStationName = metroStationName.text.toString()
             HCEService.metroRemark = metroRemark.text.toString()
             if (metroCity.text.length == 4) {
                 HCEService.metroCity = metroCity.text.toString()

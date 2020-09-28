@@ -26,7 +26,7 @@ class HCEService : HostApduService() {
         var metro = false
         var inGate = false
         var metroLine = ""
-        var metroStation = ""
+        var metroStationName = ""
         var metroRemark = ""
         var metroCity = ""
         var metroInstitution = ""
@@ -499,7 +499,7 @@ class HCEService : HostApduService() {
                 if (tran.lc == 11 && metro) {
                     val s = if (inGate) "Out" else "In"
                     val t = if (inTU) "TU" else "CU"
-                    terminals.value += "${df.format(Date())},$metroLine,$metroStation,$metroRemark,$t,$s," +
+                    terminals.value += "${df.format(Date())},$metroLine,$metroStationName,$metroRemark,$t,$s," +
                             tran.data.takeLast(12) + "\n"
                     val notification =
                         RingtoneManager.getDefaultUri(RingtoneManager.TYPE_NOTIFICATION)
