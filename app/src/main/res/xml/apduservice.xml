@@ -2,7 +2,7 @@
     android:description="@string/servicedesc"
     android:requireDeviceUnlock="false">
     <aid-group
-        android:category="other"
+        android:category="payment"
         android:description="@string/aiddescription">
         <aid-filter android:name="F04E66E75C02D8" />
         <aid-filter android:name="A00000000386980701" />

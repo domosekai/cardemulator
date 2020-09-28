@@ -1,7 +1,7 @@
 <resources>
     <string name="app_name">Card Emulator</string>
     <string name="servicedesc">Host Card Emulator Service</string>
-    <string name="aiddescription">Sample AID for testing</string>
+    <string name="aiddescription">Transit card AIDs</string>
     <string name="tab_text_1">Set</string>
     <string name="tab_text_2">Raw</string>
     <string name="tab_text_3">Term</string>
