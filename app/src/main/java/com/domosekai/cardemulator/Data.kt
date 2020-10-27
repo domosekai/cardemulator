@@ -24,6 +24,7 @@ const val TYPE_CU = 99
 
 const val TU_BJ = 1
 const val TU_NANTONG = 2
+const val TU_SH = 3
 const val TU_GEN = 99
 
 fun parseAPDU(apdu: ByteArray): Transaction {

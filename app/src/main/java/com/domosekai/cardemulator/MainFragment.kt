@@ -244,6 +244,7 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
                     "None" -> HCEService.tuType = 0
                     "TU BJ" -> HCEService.tuType = TU_BJ
                     "TU" -> HCEService.tuType = TU_GEN
+                    "TU SH" -> HCEService.tuType = TU_SH
                 }
                 tu_more.visibility =
                     if (p2 > 0) View.VISIBLE else View.GONE
