@@ -8,6 +8,7 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
+import android.widget.CheckBox
 import android.widget.TextView
 import android.widget.Toast
 import androidx.core.widget.NestedScrollView
@@ -72,11 +73,23 @@ class RawFragment : Fragment() {
             scrollView.fullScroll(View.FOCUS_DOWN)
         }
 
+        val checkbox = root.findViewById<CheckBox>(R.id.check_enable)
         val rawTextView = root.findViewById<TextView>(R.id.raw_message)
         val rawObserver = Observer<String> { new ->
             rawTextView.text = new
         }
-        HCEService.rawMessage.observe(this, rawObserver)
+        checkbox.setOnCheckedChangeListener { _, b ->
+            if (b) {
+                HCEService.rawMessage.observe(viewLifecycleOwner, rawObserver)
+            } else {
+                HCEService.rawMessage.removeObservers(viewLifecycleOwner)
+            }
+        }
+        if (checkbox.isChecked) {
+            HCEService.rawMessage.observe(viewLifecycleOwner, rawObserver)
+        } else {
+            HCEService.rawMessage.removeObservers(viewLifecycleOwner)
+        }
         return root
     }
 

@@ -26,6 +26,7 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
     private lateinit var metroCity: EditText
     private lateinit var metroInstitution: EditText
     private lateinit var metroStationIn: EditText
+    private lateinit var metroTerminalIn: EditText
     private lateinit var metroApplyButton: Button
     private lateinit var metroDefaultButton: Button
 
@@ -171,6 +172,9 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
         metroStationIn = root.findViewById<EditText>(R.id.metro_station_in)
         if (HCEService.metroStationIn != "") metroStationIn.setText(HCEService.metroStationIn)
         else HCEService.metroStationIn = metroStationIn.hint.toString()
+        metroTerminalIn = root.findViewById<EditText>(R.id.metro_terminal_in)
+        if (HCEService.metroTerminalIn != "") metroTerminalIn.setText(HCEService.metroTerminalIn)
+        else HCEService.metroTerminalIn = metroTerminalIn.hint.toString()
         metroDefaultButton = root.findViewById<Button>(R.id.metro_default)
         metroDefaultButton.setOnClickListener {
             metroCity.setText(metroCity.hint)
@@ -179,10 +183,12 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
             metroInstitution.setTextColor(pos.textColors)
             metroStationIn.setText(metroStationIn.hint)
             metroStationIn.setTextColor(pos.textColors)
+            metroTerminalIn.setText(metroTerminalIn.hint)
+            metroTerminalIn.setTextColor(pos.textColors)
         }
         metroApplyButton = root.findViewById<Button>(R.id.metro_apply)
         metroApplyButton.setOnClickListener {
-            if (metroCity.text.isEmpty() && metroInstitution.text.isEmpty() && metroStationIn.text.isEmpty()) {
+            if (metroCity.text.isEmpty() && metroInstitution.text.isEmpty()) {
                 metroDefaultButton.performClick()
             }
             HCEService.metroLine = metroLine.text.toString()
@@ -205,6 +211,12 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
                 metroStationIn.setTextColor(pos.textColors)
             } else {
                 metroStationIn.setTextColor(Color.RED)
+            }
+            if (metroTerminalIn.text.length == 16) {
+                HCEService.metroTerminalIn = metroTerminalIn.text.toString()
+                metroTerminalIn.setTextColor(pos.textColors)
+            } else {
+                metroTerminalIn.setTextColor(Color.RED)
             }
         }
         return root

@@ -74,7 +74,7 @@ class TermsFragment : Fragment() {
         val termsObserver = Observer<String> { new ->
             termsTextView.text = new
         }
-        HCEService.terminals.observe(this, termsObserver)
+        HCEService.terminals.observe(viewLifecycleOwner, termsObserver)
         return root
     }
 

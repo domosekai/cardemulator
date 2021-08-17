@@ -31,6 +31,7 @@ class HCEService : HostApduService() {
         var metroCity = ""
         var metroInstitution = ""
         var metroStationIn = ""
+        var metroTerminalIn = ""
         var prefix = ""
         var wait = false
         var waitID = 0
@@ -557,7 +558,7 @@ class HCEService : HostApduService() {
                             1 -> if (metro && inGate)
                                 "27017D010100000000000000000001" + metroCity + "0000" +
                                         metroInstitution + "FFFFFFFF" + "0000000000000000" + metroStationIn +
-                                        "000000000000000000000000000000000000000000000000" +
+                                        "0000000000000000" + metroTerminalIn + "0000000000000000" +
                                         df1.format(Date(Date().time - 60 * 60 * 1000)) +
                                         "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000"
                             else
@@ -719,9 +720,9 @@ class HCEService : HostApduService() {
             }
             // Balance
             "805C" -> result = when (tran.p1) {
-                0x05 -> "00000B220007A1200000000000000000"
+                0x05 -> "00002B220007A1200000000000000000"
                 // 01 02 03
-                else -> "00000B22"
+                else -> "00002B22"
             }
             // Get challenge
             "0084" -> result = "C620857FF5D967C2"
