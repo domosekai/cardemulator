@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:orientation="horizontal"
         android:paddingHorizontal="@dimen/activity_horizontal_margin"
-        android:paddingVertical="@dimen/activity_vertical_margin">
+        android:paddingVertical="8dp">
 
         <Button
             android:id="@+id/copy_message"
@@ -25,7 +25,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:minWidth="60dp"
-            android:text="cmds" />
+            android:text="cmd" />
 
         <Button
             android:id="@+id/save_message"
@@ -48,16 +48,30 @@
             android:minWidth="40dp"
             android:text="↓" />
 
-        <CheckBox
-            android:id="@+id/check_enable"
+        <Button
+            android:id="@+id/reload"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:checked="true" />
+            android:minWidth="40dp"
+            android:text="↻" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:paddingHorizontal="@dimen/activity_horizontal_margin">
+
+        <CheckBox
+            android:id="@+id/raw_live"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="false" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Enable" />
+            android:text="Real Time (Slow)" />
     </LinearLayout>
 
     <androidx.core.widget.NestedScrollView

@@ -42,7 +42,7 @@ class TermsFragment : Fragment() {
                 val os = FileOutputStream(file)
                 os.write(HCEService.terminals.value?.toByteArray())
                 os.close()
-                Toast.makeText(context, "Save OK", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Saved to app folder", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Toast.makeText(context, "Save error: $e", Toast.LENGTH_SHORT).show()
             }
@@ -59,6 +59,7 @@ class TermsFragment : Fragment() {
                 requireActivity().getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
             val clip: ClipData = ClipData.newPlainText("simple text", HCEService.terminals.value)
             clipboard.setPrimaryClip(clip)
+            Toast.makeText(context, "Terminal ID copied", Toast.LENGTH_SHORT).show()
         }
 
         rg = root.findViewById<RadioGroup>(R.id.radio_gate)

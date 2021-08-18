@@ -21,12 +21,15 @@ import java.util.*
 
 class RawFragment : Fragment() {
 
+    private var commands: String = ""
+
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
     ): View? {
         // Inflate the layout for this fragment
         val root = inflater.inflate(R.layout.fragment_raw, container, false)
+        val rawTextView = root.findViewById<TextView>(R.id.raw_message)
 
         val saveButton = root.findViewById<Button>(R.id.save_message)
         saveButton.setOnClickListener {
@@ -35,18 +38,26 @@ class RawFragment : Fragment() {
                 val file =
                     File(context?.getExternalFilesDir(null), "raw-" + sdf.format(Date()) + ".log")
                 val os = FileOutputStream(file)
-                os.write(HCEService.rawMessage.value?.toByteArray())
+                os.write(rawTextView.text.toString().toByteArray())
                 os.close()
-                Toast.makeText(context, "Save OK", Toast.LENGTH_SHORT).show()
+                Toast.makeText(context, "Saved to app folder", Toast.LENGTH_SHORT).show()
             } catch (e: Exception) {
                 Toast.makeText(context, "Save error: $e", Toast.LENGTH_SHORT).show()
             }
+        }
+
+        val reloadButton = root.findViewById<Button>(R.id.reload)
+        reloadButton.setOnClickListener {
+            rawTextView.text = HCEService.rawMessage.value
+            commands = HCEService.commands
         }
 
         val clearButton = root.findViewById<Button>(R.id.clear_message)
         clearButton.setOnClickListener {
             HCEService.rawMessage.value = ""
             HCEService.commands = ""
+            rawTextView.text = ""
+            commands = ""
         }
 
         val copyCommandsButton = root.findViewById<Button>(R.id.copy_commands)
@@ -54,16 +65,18 @@ class RawFragment : Fragment() {
             val clipboard =
                 requireActivity().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
             val clip: ClipData =
-                ClipData.newPlainText("simple text", HCEService.commands)
+                ClipData.newPlainText("simple text", commands)
             clipboard.setPrimaryClip(clip)
+            Toast.makeText(context, "Commands copied", Toast.LENGTH_SHORT).show()
         }
 
         val copyAllButton = root.findViewById<Button>(R.id.copy_message)
         copyAllButton.setOnClickListener {
             val clipboard =
                 requireActivity().getSystemService(CLIPBOARD_SERVICE) as ClipboardManager
-            val clip: ClipData = ClipData.newPlainText("simple text", HCEService.rawMessage.value)
+            val clip: ClipData = ClipData.newPlainText("simple text", rawTextView.text)
             clipboard.setPrimaryClip(clip)
+            Toast.makeText(context, "Log copied", Toast.LENGTH_SHORT).show()
         }
 
         // NestedScrollView supports auto hiding toolbar
@@ -73,10 +86,10 @@ class RawFragment : Fragment() {
             scrollView.fullScroll(View.FOCUS_DOWN)
         }
 
-        val checkbox = root.findViewById<CheckBox>(R.id.check_enable)
-        val rawTextView = root.findViewById<TextView>(R.id.raw_message)
+        val checkbox = root.findViewById<CheckBox>(R.id.raw_live)
         val rawObserver = Observer<String> { new ->
             rawTextView.text = new
+            commands = HCEService.commands
         }
         checkbox.setOnCheckedChangeListener { _, b ->
             if (b) {
