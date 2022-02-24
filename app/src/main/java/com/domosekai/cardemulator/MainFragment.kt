@@ -73,22 +73,22 @@ class MainFragment : Fragment(), AdapterView.OnItemSelectedListener {
         val plus10 = root.findViewById<Button>(R.id.plus10)
         val minus50 = root.findViewById<Button>(R.id.minus50)
         val plus50 = root.findViewById<Button>(R.id.plus50)
-        HCEService.prefix = pos.text.toString().take(7)
+        HCEService.prefix = pos.text.toString().take(11)
         minus10.setOnClickListener {
-            pos.setText((pos.text.toString().toInt() - 10).toString().padStart(8, '0'))
+            pos.setText((pos.text.toString().toLong() - 10).toString().padStart(12, '0'))
         }
         plus10.setOnClickListener {
-            pos.setText((pos.text.toString().toInt() + 10).toString().padStart(8, '0'))
+            pos.setText((pos.text.toString().toLong() + 10).toString().padStart(12, '0'))
         }
         minus50.setOnClickListener {
-            pos.setText((pos.text.toString().toInt() - 50).toString().padStart(8, '0'))
+            pos.setText((pos.text.toString().toLong() - 50).toString().padStart(12, '0'))
         }
         plus50.setOnClickListener {
-            pos.setText((pos.text.toString().toInt() + 50).toString().padStart(8, '0'))
+            pos.setText((pos.text.toString().toLong() + 50).toString().padStart(12, '0'))
         }
         val posWatcher = object : TextWatcher {
             override fun afterTextChanged(p0: Editable?) {
-                HCEService.prefix = p0.toString().take(7)
+                HCEService.prefix = p0.toString().take(11)
             }
 
             override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
