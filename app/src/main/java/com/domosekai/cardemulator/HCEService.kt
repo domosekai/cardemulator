@@ -131,6 +131,11 @@ class HCEService : HostApduService() {
                             result = "6F0A84085041592E41505059"
                             inTU = false
                         }
+                    "ADF1" ->
+                        if (cardType == TYPE_YCT) {
+                            tran.result = "6F0A84085041592E4D4631586A81"
+                            inTU = false
+                        }
                     "5041592E5449434C" ->
                         if (cardType == TYPE_YCT) {
                             result =
@@ -824,15 +829,21 @@ class HCEService : HostApduService() {
             }
             // Update record
             "80DC" -> result = ""
+            // GZ Metro
+            "C4FE" -> result = "41070B16BEF8F42110010184"
+            //"C4FE" -> result = "BA9A8B9F34000035C0490032"
+            "C4FB" -> result = "0002000A"
         }
 
-        if (result != null) {
-            if (tran.le > 0 && result.length / 2 > tran.le) {
-                result = result.take(tran.le * 2)
+        if (tran.result == "") {
+            if (result != null) {
+                if (tran.le > 0 && result.length / 2 > tran.le) {
+                    result = result.take(tran.le * 2)
+                }
+                tran.result = result + STATUS_SUCCESS
+            } else {
+                tran.result = STATUS_FAILED
             }
-            tran.result = result + STATUS_SUCCESS
-        } else {
-            tran.result = STATUS_FAILED
         }
 
         rawMessage.value += "Response: ${tran.result}\n\n"
